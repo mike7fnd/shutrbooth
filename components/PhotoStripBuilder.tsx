@@ -4,36 +4,47 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Trash2, RotateCcw, ImageOff } from 'lucide-react';
 import { exportPhotoStripFromElement, StripLayout } from '@/lib/export';
+import { StripTemplate } from '@/lib/templates';
+import TemplateSelector from './TemplateSelector';
 import AnimatedButton from './AnimatedButton';
 
 interface PhotoStripBuilderProps {
   photos: string[];
   layout: StripLayout;
+  template: StripTemplate;
+  onTemplateChange: (t: StripTemplate) => void;
   onClear: () => void;
   onRetake: (index: number) => void;
 }
 
-/* Small random tilt per photo slot — makes it feel scrapbooked */
 const ROTATIONS = ['-1.2deg', '0.8deg', '-0.5deg', '1deg'];
 
-export default function PhotoStripBuilder({ photos, layout, onClear, onRetake }: PhotoStripBuilderProps) {
+export default function PhotoStripBuilder({
+  photos,
+  layout,
+  template,
+  onTemplateChange,
+  onClear,
+  onRetake,
+}: PhotoStripBuilderProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      await exportPhotoStripFromElement('photo-strip-preview', `snapbooth-${layout}.png`);
+      await exportPhotoStripFromElement('photo-strip-preview', `shuttrbooth-${layout}.png`);
     } finally {
       setIsExporting(false);
     }
   };
 
+  const t = template;
   const maxPhotos = 4;
   const displaySlots = Array.from({ length: maxPhotos }, (_, i) => photos[i] || null);
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-3 h-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-charcoal font-semibold text-sm">
@@ -53,20 +64,30 @@ export default function PhotoStripBuilder({ photos, layout, onClear, onRetake }:
         )}
       </div>
 
+      {/* Template selector */}
+      <TemplateSelector selected={t} onChange={onTemplateChange} />
+
       {/* Strip Preview */}
       <div
         id="photo-strip-preview"
-        className="flex-1 flex flex-col rounded-2xl border border-[#E5E0D8] overflow-hidden"
-        style={{ background: '#F8F6F2' }}
+        className="flex-1 flex flex-col rounded-2xl overflow-hidden"
+        style={{ background: t.stripBg, border: `1px solid ${t.borderColor}` }}
       >
         {/* Strip label */}
-        <div className="px-4 py-2.5 border-b border-[#E5E0D8] flex items-center justify-between">
-          <span className="text-warm-gray text-[10px] tracking-widest uppercase">snapbooth</span>
-          <span className="text-warm-gray text-[10px]">{new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+        <div
+          className="px-4 py-2.5 flex items-center justify-between flex-shrink-0"
+          style={{ borderBottom: `1px solid ${t.dividerColor}` }}
+        >
+          <span className="text-[10px] tracking-widest uppercase font-medium" style={{ color: t.labelText }}>
+            shuttrbooth
+          </span>
+          <span className="text-[10px]" style={{ color: t.labelText }}>
+            {new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+          </span>
         </div>
 
         {/* Photos */}
-        <div className={`flex-1 overflow-y-auto p-3 flex ${layout === 'square' ? 'flex-wrap' : 'flex-col'} gap-2`}>
+        <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
           <AnimatePresence>
             {displaySlots.map((photo, index) => (
               <motion.div
@@ -74,15 +95,16 @@ export default function PhotoStripBuilder({ photos, layout, onClear, onRetake }:
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.08 }}
-                className={`relative group ${layout === 'square' ? 'w-[calc(50%-4px)]' : 'w-full'}`}
+                className="relative group w-full"
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 {photo ? (
                   <div
-                    className="relative overflow-hidden rounded-sm shadow-photo bg-white"
+                    className="relative overflow-hidden rounded-sm shadow-photo"
                     style={{
                       padding: '4px 4px 16px',
+                      background: t.photoFrameBg,
                       rotate: ROTATIONS[index],
                       transition: 'box-shadow 0.2s',
                     }}
@@ -93,7 +115,6 @@ export default function PhotoStripBuilder({ photos, layout, onClear, onRetake }:
                       className="w-full object-cover rounded-[1px]"
                       style={{ aspectRatio: layout === 'square' ? '1/1' : '4/3', display: 'block' }}
                     />
-                    {/* Retake overlay */}
                     <AnimatePresence>
                       {hoveredIndex === index && (
                         <motion.div
@@ -118,12 +139,18 @@ export default function PhotoStripBuilder({ photos, layout, onClear, onRetake }:
                   </div>
                 ) : (
                   <div
-                    className="w-full rounded-sm border border-dashed border-[#D0C8BC] flex items-center justify-center bg-cream/50"
-                    style={{ aspectRatio: layout === 'square' ? '1/1' : '4/3' }}
+                    className="w-full rounded-sm border border-dashed flex items-center justify-center"
+                    style={{
+                      aspectRatio: layout === 'square' ? '1/1' : '4/3',
+                      background: t.emptySlotBg,
+                      borderColor: t.emptySlotBorder,
+                    }}
                   >
                     <div className="flex flex-col items-center gap-1">
-                      <ImageOff className="w-4 h-4 text-warm-gray/40" />
-                      <span className="text-warm-gray/40 text-[10px] tracking-wide">shot {index + 1}</span>
+                      <ImageOff className="w-4 h-4" style={{ color: `${t.labelText}60` }} />
+                      <span className="text-[10px] tracking-wide" style={{ color: `${t.labelText}60` }}>
+                        shot {index + 1}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -132,15 +159,21 @@ export default function PhotoStripBuilder({ photos, layout, onClear, onRetake }:
           </AnimatePresence>
         </div>
 
-        {/* Strip bottom label */}
-        <div className="px-4 py-2.5 border-t border-[#E5E0D8]">
+        {/* Strip bottom dots */}
+        <div
+          className="px-4 py-2.5 flex-shrink-0"
+          style={{ borderTop: `1px solid ${t.dividerColor}` }}
+        >
           <div className="flex items-center justify-center gap-1">
             {Array.from({ length: maxPhotos }).map((_, i) => (
               <div
                 key={i}
-                className={`rounded-full transition-all duration-300 ${
-                  i < photos.length ? 'w-2 h-2 bg-faded-brown' : 'w-1.5 h-1.5 bg-[#D0C8BC]'
-                }`}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: i < photos.length ? '8px' : '6px',
+                  height: i < photos.length ? '8px' : '6px',
+                  background: i < photos.length ? t.dotActive : t.dotInactive,
+                }}
               />
             ))}
           </div>

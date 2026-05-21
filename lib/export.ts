@@ -32,7 +32,7 @@ export async function exportPhotoStrip(options: ExportOptions): Promise<void> {
     canvas = createFilmStrip(photos, filterCSS);
   }
 
-  downloadCanvas(canvas, `snapbooth-${layout}-${Date.now()}.png`);
+  downloadCanvas(canvas, `shuttrbooth-${layout}-${Date.now()}.png`);
 }
 
 function createFilmStrip(photos: string[], filterCSS: string): HTMLCanvasElement {
@@ -70,7 +70,7 @@ function createFilmStrip(photos: string[], filterCSS: string): HTMLCanvasElement
   ctx.fillStyle = '#F9A8D4';
   ctx.font = 'bold 18px Inter, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✨ SnapBooth', stripWidth / 2, 38);
+  ctx.fillText('✨ ShuttrBooth', stripWidth / 2, 38);
 
   // Draw photos
   photos.forEach((photo, index) => {
@@ -164,7 +164,7 @@ function createPolaroidStrip(photos: string[], filterCSS: string): HTMLCanvasEle
   ctx.fillStyle = '#F9A8D4';
   ctx.font = 'bold 24px Inter, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✨ SnapBooth Moments', canvasWidth / 2, 40);
+  ctx.fillText('✨ ShuttrBooth Moments', canvasWidth / 2, 40);
 
   photos.forEach((photo, index) => {
     const col = index % cols;
@@ -226,8 +226,8 @@ function createSquareLayout(photos: string[], filterCSS: string): HTMLCanvasElem
   const padding = 8;
   const headerH = 60;
   const count = Math.min(photos.length, 4);
-  const cols = count <= 2 ? count : 2;
-  const rows = Math.ceil(count / 2);
+  const cols = 1;
+  const rows = count;
 
   const canvasW = cols * size + (cols + 1) * padding;
   const canvasH = headerH + rows * size + (rows + 1) * padding;
@@ -244,7 +244,7 @@ function createSquareLayout(photos: string[], filterCSS: string): HTMLCanvasElem
   ctx.fillStyle = '#F9A8D4';
   ctx.font = 'bold 22px Inter, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✨ SnapBooth', canvasW / 2, 38);
+  ctx.fillText('✨ ShuttrBooth', canvasW / 2, 38);
 
   photos.slice(0, 4).forEach((photo, index) => {
     const col = index % 2;
@@ -312,7 +312,7 @@ export async function exportPhotoStripFromElement(
       logging: false,
     });
 
-    downloadCanvas(canvas, filename || `snapbooth-strip-${Date.now()}.png`);
+    downloadCanvas(canvas, filename || `shuttrbooth-strip-${Date.now()}.png`);
   } catch (error) {
     console.error('Export failed:', error);
   }

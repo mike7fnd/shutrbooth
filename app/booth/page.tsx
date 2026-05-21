@@ -21,6 +21,9 @@ import CountdownOverlay from '@/components/CountdownOverlay';
 import FlashAnimation from '@/components/FlashAnimation';
 import PhotoStripBuilder from '@/components/PhotoStripBuilder';
 import ExportModal from '@/components/ExportModal';
+import FlyingPhoto from '@/components/FlyingPhoto';
+import ColorRingLight from '@/components/ColorRingLight';
+import { StripTemplate, DEFAULT_TEMPLATE } from '@/lib/templates';
 
 const LAYOUT_OPTIONS: { id: StripLayout; label: string; icon: React.ReactNode; max: number }[] = [
   { id: 'strip',    label: 'strip',    icon: <Film className="w-3.5 h-3.5" />, max: 4 },
@@ -42,6 +45,19 @@ export default function BoothPage() {
   const [autoMode, setAutoMode] = useState(false);
   const autoModeRef = useRef(false);
 
+  const [template, setTemplate] = useState<StripTemplate>(DEFAULT_TEMPLATE);
+  const [ringLightColor, setRingLightColor] = useState<string | null>(null);
+  const [ringLightIntensity, setRingLightIntensity] = useState(0.55);
+
+  const cameraViewRef = useRef<HTMLDivElement>(null);
+  const stripPanelRef = useRef<HTMLDivElement>(null);
+  const [flyingPhotos, setFlyingPhotos] = useState<Array<{
+    id: number;
+    src: string;
+    from: { x: number; y: number; width: number; height: number };
+    to: { x: number; y: number; width: number; height: number };
+  }>>([]);
+
   const maxPhotos = LAYOUT_OPTIONS.find((l) => l.id === layout)?.max || 4;
 
   useEffect(() => {
@@ -56,6 +72,21 @@ export default function BoothPage() {
     if (!videoRef.current) return;
     setIsFlashing(true);
     const dataUrl = captureVideoFrame(videoRef.current, filterCSS);
+
+    const fromEl = cameraViewRef.current;
+    const toEl = stripPanelRef.current;
+    if (fromEl && toEl) {
+      const fr = fromEl.getBoundingClientRect();
+      const tr = toEl.getBoundingClientRect();
+      const id = Date.now();
+      setFlyingPhotos(prev => [...prev, {
+        id,
+        src: dataUrl,
+        from: { x: fr.left, y: fr.top, width: fr.width, height: fr.height },
+        to: { x: tr.left, y: tr.top, width: tr.width, height: tr.height },
+      }]);
+    }
+
     setTimeout(() => {
       if (retakeIndex !== null) {
         setPhotos((prev) => {
@@ -67,7 +98,7 @@ export default function BoothPage() {
       } else {
         setPhotos((prev) => (prev.length >= maxPhotos ? prev : [...prev, dataUrl]));
       }
-    }, 100);
+    }, 520);
   }, [videoRef, filterCSS, retakeIndex, maxPhotos]);
 
   const handleCountdownComplete = useCallback(() => {
@@ -115,6 +146,18 @@ export default function BoothPage() {
   return (
     <div className="min-h-screen bg-paper flex flex-col pb-24 md:pb-0 lg:h-screen lg:overflow-hidden">
 
+      {/* Virtual ring light — desktop only */}
+      <motion.div
+        className="fixed inset-0 pointer-events-none z-[9999] hidden lg:block"
+        animate={{
+          opacity: ringLightColor ? ringLightIntensity : 0,
+          boxShadow: ringLightColor
+            ? `inset 0 0 0px 70px ${ringLightColor}`
+            : 'inset 0 0 0px 0px transparent',
+        }}
+        transition={{ duration: 0.35 }}
+      />
+
       {/* Top Bar */}
       <motion.header
         initial={{ y: -60, opacity: 0 }}
@@ -132,12 +175,7 @@ export default function BoothPage() {
           </motion.div>
         </Link>
 
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-charcoal flex items-center justify-center">
-            <Camera className="w-3 h-3 text-paper" strokeWidth={2.5} />
-          </div>
-          <span className="font-serif text-charcoal">SnapBooth</span>
-        </div>
+        <span className="font-serif text-charcoal">ShuttrBooth</span>
 
         <div className="flex items-center gap-2">
           {stripComplete && (
@@ -197,6 +235,7 @@ export default function BoothPage() {
             className="relative"
           >
             <div
+              ref={cameraViewRef}
               className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-[#E5E0D8] shadow-card-lg"
               style={{ background: '#1A1814' }}
             >
@@ -310,17 +349,29 @@ export default function BoothPage() {
             transition={{ delay: 0.25 }}
             className="flex items-center justify-center gap-6"
           >
-            {/* Flip camera */}
-            <motion.button
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
-              onClick={switchCamera}
-              disabled={isLoading || !!error}
-              className="w-11 h-11 rounded-xl bg-white border border-[#E5E0D8] flex items-center justify-center text-warm-gray hover:text-charcoal hover:border-[#D0C8BC] transition-all duration-200 shadow-paper disabled:opacity-40"
-              title="Switch camera"
-            >
-              <FlipHorizontal className="w-4 h-4" />
-            </motion.button>
+            {/* Left controls */}
+            <div className="flex items-center gap-2">
+              {/* Flip camera */}
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
+                onClick={switchCamera}
+                disabled={isLoading || !!error}
+                className="w-11 h-11 rounded-xl bg-white border border-[#E5E0D8] flex items-center justify-center text-warm-gray hover:text-charcoal hover:border-[#D0C8BC] transition-all duration-200 shadow-paper disabled:opacity-40"
+                title="Switch camera"
+              >
+                <FlipHorizontal className="w-4 h-4" />
+              </motion.button>
+
+              {/* Ring light — desktop only */}
+              <div className="hidden lg:block">
+                <ColorRingLight
+                  color={ringLightColor}
+                  intensity={ringLightIntensity}
+                  onChange={(c, i) => { setRingLightColor(c); setRingLightIntensity(i); }}
+                />
+              </div>
+            </div>
 
             {/* Shutter */}
             <div className="relative">
@@ -401,16 +452,28 @@ export default function BoothPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="w-full lg:w-60 xl:w-64 lg:h-full lg:flex lg:flex-col"
         >
-          <div className="bg-white border border-[#E5E0D8] rounded-2xl p-4 h-full min-h-[480px] lg:min-h-0 lg:flex-1 lg:overflow-y-auto flex flex-col shadow-card">
+          <div ref={stripPanelRef} className="bg-white border border-[#E5E0D8] rounded-2xl p-4 h-full min-h-[480px] lg:min-h-0 lg:flex-1 lg:overflow-y-auto flex flex-col shadow-card">
             <PhotoStripBuilder
               photos={photos}
               layout={layout}
+              template={template}
+              onTemplateChange={setTemplate}
               onClear={handleClearStrip}
               onRetake={handleRetake}
             />
           </div>
         </motion.div>
       </div>
+
+      {flyingPhotos.map(fp => (
+        <FlyingPhoto
+          key={fp.id}
+          src={fp.src}
+          from={fp.from}
+          to={fp.to}
+          onComplete={() => setFlyingPhotos(prev => prev.filter(p => p.id !== fp.id))}
+        />
+      ))}
 
       <FlashAnimation isFlashing={isFlashing} onComplete={() => setIsFlashing(false)} />
 
@@ -419,6 +482,7 @@ export default function BoothPage() {
         onClose={() => setShowExportModal(false)}
         photos={photos}
         layout={layout}
+        template={template}
       />
     </div>
   );

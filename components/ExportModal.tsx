@@ -5,15 +5,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download, Copy, Check } from 'lucide-react';
 import { exportPhotoStripFromElement } from '@/lib/export';
 import AnimatedButton from './AnimatedButton';
+import { StripTemplate } from '@/lib/templates';
 
 interface ExportModalProps {
   isOpen: boolean;
   onClose: () => void;
   photos: string[];
   layout: string;
+  template: StripTemplate;
 }
 
-export default function ExportModal({ isOpen, onClose, photos, layout }: ExportModalProps) {
+export default function ExportModal({ isOpen, onClose, photos, layout, template }: ExportModalProps) {
+  const t = template;
   const [isDownloading, setIsDownloading] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -21,7 +24,7 @@ export default function ExportModal({ isOpen, onClose, photos, layout }: ExportM
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      await exportPhotoStripFromElement('export-modal-strip', `snapbooth-${layout}-${Date.now()}.png`);
+      await exportPhotoStripFromElement('export-modal-strip', `shuttrbooth-${layout}-${Date.now()}.png`);
     } finally {
       setIsDownloading(false);
     }
@@ -100,18 +103,30 @@ export default function ExportModal({ isOpen, onClose, photos, layout }: ExportM
               <div className="p-5">
                 <div
                   id="export-modal-strip"
-                  className="bg-white border border-[#E5E0D8] rounded-xl overflow-hidden shadow-card"
+                  className="rounded-xl overflow-hidden shadow-card"
+                  style={{ background: t.stripBg, border: `1px solid ${t.borderColor}` }}
                 >
                   {/* Header label */}
-                  <div className="px-4 py-2 border-b border-[#F0EBE3] flex items-center justify-between">
-                    <span className="text-warm-gray text-[9px] tracking-widest uppercase">snapbooth</span>
-                    <span className="text-warm-gray text-[9px]">{new Date().getFullYear()}</span>
+                  <div
+                    className="px-4 py-2 flex items-center justify-between"
+                    style={{ borderBottom: `1px solid ${t.dividerColor}` }}
+                  >
+                    <span className="text-[9px] tracking-widest uppercase font-medium" style={{ color: t.labelText }}>
+                      shuttrbooth
+                    </span>
+                    <span className="text-[9px]" style={{ color: t.labelText }}>
+                      {new Date().getFullYear()}
+                    </span>
                   </div>
 
                   {/* Photos */}
                   <div className="p-3 flex flex-col gap-2">
                     {photos.map((photo, index) => (
-                      <div key={index} className="relative overflow-hidden rounded-[2px] bg-white p-1 pb-3 shadow-paper">
+                      <div
+                        key={index}
+                        className="relative overflow-hidden rounded-[2px] shadow-paper"
+                        style={{ background: t.photoFrameBg, padding: '4px 4px 14px' }}
+                      >
                         <img
                           src={photo}
                           alt={`Photo ${index + 1}`}
@@ -123,8 +138,8 @@ export default function ExportModal({ isOpen, onClose, photos, layout }: ExportM
                   </div>
 
                   {/* Footer */}
-                  <div className="px-4 py-2 border-t border-[#F0EBE3]">
-                    <p className="text-center text-warm-gray/50 text-[9px] tracking-widest uppercase">
+                  <div className="px-4 py-2" style={{ borderTop: `1px solid ${t.dividerColor}` }}>
+                    <p className="text-center text-[9px] tracking-widest uppercase" style={{ color: `${t.labelText}80` }}>
                       {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </p>
                   </div>

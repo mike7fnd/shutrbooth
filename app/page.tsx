@@ -100,11 +100,6 @@ export default function LandingPage() {
 
           {/* Left — Copy */}
           <div className="flex-1 max-w-xl">
-            <motion.div {...fadeUp(0)} className="label-tag mb-10">
-              <span className="w-1.5 h-1.5 rounded-full bg-faded-brown inline-block" />
-              free to use · no sign-up required
-            </motion.div>
-
             <motion.h1
               {...fadeUp(0.08)}
               className="serif text-[clamp(3.2rem,8vw,7rem)] leading-[0.92] tracking-tight text-charcoal mb-8"
@@ -192,7 +187,6 @@ export default function LandingPage() {
       <section className="py-28 px-6 bg-cream">
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeInView()} className="mb-16">
-            <p className="text-faded-brown text-xs font-semibold tracking-widest uppercase mb-4">features</p>
             <h2 className="serif text-4xl md:text-5xl text-charcoal leading-tight">
               everything you need<br />
               <span className="italic text-faded-brown">to look amazing.</span>
@@ -223,7 +217,6 @@ export default function LandingPage() {
       <section className="py-28 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeInView()} className="text-center mb-20">
-            <p className="text-faded-brown text-xs font-semibold tracking-widest uppercase mb-4">filters</p>
             <h2 className="serif text-4xl md:text-5xl text-charcoal">
               10 moods, one click.
             </h2>
@@ -286,7 +279,6 @@ export default function LandingPage() {
       <section className="py-28 px-6 bg-cream">
         <div className="max-w-5xl mx-auto">
           <motion.div {...fadeInView()} className="mb-16">
-            <p className="text-faded-brown text-xs font-semibold tracking-widest uppercase mb-4">from the community</p>
             <h2 className="serif text-4xl md:text-5xl text-charcoal">
               people love<br />
               <span className="italic">their memories.</span>
@@ -358,7 +350,7 @@ export default function LandingPage() {
             <Link href="/booth">
               <AnimatedButton variant="warm" size="xl" className="group">
                 <Camera className="w-4 h-4" />
-                open snapbooth
+                open shuttrbooth
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </AnimatedButton>
             </Link>
@@ -369,11 +361,8 @@ export default function LandingPage() {
       {/* ===== FOOTER ===== */}
       <footer className="border-t border-[#E5E0D8] py-10 px-6">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-charcoal flex items-center justify-center">
-              <Camera className="w-3 h-3 text-paper" strokeWidth={2.5} />
-            </div>
-            <span className="serif text-charcoal">SnapBooth</span>
+          <div className="flex items-center">
+            <span className="serif text-charcoal">ShuttrBooth</span>
           </div>
 
           <p className="text-warm-gray text-xs">

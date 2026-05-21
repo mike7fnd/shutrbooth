@@ -20,12 +20,9 @@ export default function FloatingNavbar() {
         <div className="max-w-3xl mx-auto">
           <div className="bg-white/90 backdrop-blur-md border border-[#E5E0D8] rounded-2xl shadow-card flex items-center justify-between px-6 py-3 w-full">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-7 h-7 rounded-lg bg-charcoal flex items-center justify-center shadow-paper">
-                <Camera className="w-3.5 h-3.5 text-paper" strokeWidth={2.5} />
-              </div>
+            <Link href="/" className="flex items-center group">
               <span className="font-serif text-charcoal text-lg font-normal tracking-tight">
-                SnapBooth
+                ShuttrBooth
               </span>
             </Link>
 

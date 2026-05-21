@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'SnapBooth — Aesthetic Photobooth',
+  title: 'ShuttrBooth — Aesthetic Photobooth',
   description:
     'Create beautiful photo strips with real-time filters. A papery, editorial photobooth experience straight from your browser.',
   keywords: ['photobooth', 'photo strip', 'filters', 'aesthetic', 'camera', 'vintage'],
   openGraph: {
-    title: 'SnapBooth — Aesthetic Photobooth',
+    title: 'ShuttrBooth — Aesthetic Photobooth',
     description: 'Capture film-quality memories with real-time filters and beautiful photo strips.',
     type: 'website',
   },
