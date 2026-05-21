@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #F8F6F2;
+  --cream: #EFE8DD;
+  --charcoal: #1E1E1E;
+  --warm-gray: #7A7A7A;
+  --sage: #8A9E8A;
+  --dusty-blue: #8EA3B8;
+  --faded-brown: #9B7E6A;
+  --pale-peach: #F2D9C8;
+  --tape-color: #F0E6C0;
+  --border-warm: #E5E0D8;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--paper);
+  color: var(--charcoal);
+  font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Paper grain overlay */
+.grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.038;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #EFE8DD; }
+::-webkit-scrollbar-thumb { background: rgba(155, 126, 106, 0.35); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(155, 126, 106, 0.6); }
+
+@layer components {
+  /* Paper card — white, thin warm border, matte shadow */
+  .paper-card {
+    @apply bg-white border border-[#E5E0D8] rounded-2xl shadow-card;
+  }
+
+  /* Cream card variant */
+  .cream-card {
+    @apply bg-cream border border-[#DDD5C8] rounded-2xl shadow-card;
+  }
+
+  /* Masking tape strip */
+  .tape-strip {
+    position: absolute;
+    height: 18px;
+    width: 52px;
+    background: rgba(240, 230, 192, 0.88);
+    border-radius: 2px;
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.09);
+    z-index: 10;
+  }
+
+  /* Serif heading utility */
+  .serif {
+    font-family: 'Instrument Serif', Georgia, serif;
+  }
+
+  /* Editorial label */
+  .label-tag {
+    @apply inline-flex items-center gap-2 bg-cream border border-[#D5CCB8] rounded-full px-4 py-1.5 text-xs text-warm-gray tracking-wide;
+  }
+
+  /* Matte charcoal button */
+  .btn-ink {
+    @apply bg-charcoal text-paper font-semibold rounded-xl shadow-card hover:shadow-lifted transition-all duration-300;
+  }
+
+  /* Warm outline button */
+  .btn-warm {
+    @apply bg-white border border-[#D5CCB8] text-charcoal font-medium rounded-xl shadow-paper hover:shadow-card transition-all duration-200;
+  }
+
+  /* Photo print border — looks like a printed photo */
+  .photo-print {
+    @apply bg-white p-2 rounded-sm shadow-photo;
+  }
+}
+
+/* Animations */
+@keyframes paperDrift {
+  0%, 100% { transform: translateY(0px) rotate(-1.5deg); }
+  50%       { transform: translateY(-7px) rotate(-1.1deg); }
+}
+
+@keyframes paperDrift2 {
+  0%, 100% { transform: translateY(0px) rotate(1.2deg); }
+  50%       { transform: translateY(-5px) rotate(1.6deg); }
+}
+
+@keyframes paperDrift3 {
+  0%, 100% { transform: translateY(0px) rotate(-0.8deg); }
+  50%       { transform: translateY(-9px) rotate(-0.4deg); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Shutter pulse ring */
+@keyframes shutterRing {
+  0%   { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+::selection {
+  background: rgba(155, 126, 106, 0.18);
+  color: #1E1E1E;
+}
+
+html { scroll-behavior: smooth; }
