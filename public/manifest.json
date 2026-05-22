@@ -1,0 +1,36 @@
+{
+  "name": "ShuttrBooth",
+  "short_name": "ShuttrBooth",
+  "description": "Aesthetic photobooth for capturing film-quality memories with real-time filters and beautiful photo strips.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F8F6F2",
+  "theme_color": "#2D2926",
+  "categories": ["photography", "utilities"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Open Booth",
+      "short_name": "Booth",
+      "description": "Go straight to the photo booth",
+      "url": "/booth",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ]
+}
